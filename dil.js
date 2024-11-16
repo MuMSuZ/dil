@@ -1,5 +1,5 @@
-// Kelime haznesi
-let wordBank = [];
+// LocalStorage'dan kelime haznesini yükle
+let wordBank = JSON.parse(localStorage.getItem('wordBank')) || [];
 
 // DOM elementlerini seç
 const wordInput = document.getElementById('word');
@@ -16,7 +16,12 @@ addWordButton.addEventListener('click', () => {
   const translation = translationInput.value.trim();
 
   if (word && translation) {
+    // Kelimeyi kelime haznesine ekle
     wordBank.push({ word, translation });
+
+    // LocalStorage'a kaydet
+    localStorage.setItem('wordBank', JSON.stringify(wordBank));
+
     alert(`Kelime eklendi: ${word} - ${translation}`);
     wordInput.value = '';
     translationInput.value = '';
@@ -42,7 +47,7 @@ function startQuiz() {
     feedbackElement.textContent = '';
     answerInput.value = '';
   } else {
-    alert('Henüz hiç kelime eklemediniz!');
+    quizWordElement.textContent = 'Kelime eklemeniz gerekiyor!';
   }
 }
 
