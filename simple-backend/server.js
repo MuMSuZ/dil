@@ -5,7 +5,8 @@ const fs = require('fs'); // File System modülü
 const FILE_PATH = 'words.json'; // Kelimelerin kaydedileceği JSON dosyası
 
 const app = express();
-const PORT = 3000;
+// Render için dinamik port kullanımı, yerelde 3000 olarak ayarlanır
+const PORT = process.env.PORT || 3000;
 
 // Bellekteki kelime listesi
 let words = [];
