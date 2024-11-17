@@ -55,5 +55,5 @@ app.get('/words/today', (req, res) => {
 
 // Sunucuyu Başlat
 app.listen(PORT, () => {
-  console.log(`Sunucu http://localhost:${PORT} üzerinde çalışıyor.`);
+  console.log(`Sunucu ${PORT} üzerinde çalışıyor.`);
 });
