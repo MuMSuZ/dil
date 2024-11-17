@@ -1,30 +1,19 @@
-const API_URL = 'http://localhost:3000'; // Node.js API URL'si
+const API_URL = 'https://kelime-api.onrender.com'; // Render'daki API URL'n
 
-// DOM elementlerini seç
-const wordListElement = document.getElementById('word-list');
-
-// API'den tüm kelimeleri al ve ekrana yazdır
 async function loadAllWords() {
   try {
-    const response = await fetch(`${API_URL}/words`); // Tüm kelimeleri al
+    const response = await fetch(`${API_URL}/words`);
     const wordBank = await response.json();
 
-    wordListElement.innerHTML = ''; // Mevcut listeyi temizle
-
-    if (wordBank.length === 0) {
-      wordListElement.innerHTML = '<li>Hiç kelime eklenmedi.</li>';
-    } else {
-      wordBank.forEach(entry => {
-        const listItem = document.createElement('li');
-        listItem.textContent = `${entry.word} - ${entry.translation}`;
-        wordListElement.appendChild(listItem);
-      });
-    }
+    const wordListElement = document.getElementById('word-list');
+    wordListElement.innerHTML = wordBank.length
+      ? wordBank.map(word => `<li>${word.word} - ${word.translation}</li>`).join('')
+      : '<li>Hiç kelime eklenmedi.</li>';
   } catch (error) {
-    console.error('Kelimeler yüklenirken hata oluştu:', error);
-    wordListElement.innerHTML = '<li>Kelime listesi yüklenemedi. Lütfen daha sonra tekrar deneyin.</li>';
+    alert('Tüm kelimeler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+    console.error(error);
   }
 }
 
-// Sayfa yüklendiğinde tüm kelimeleri göster
+// Sayfa yüklendiğinde tüm kelimeleri yükle
 loadAllWords();
