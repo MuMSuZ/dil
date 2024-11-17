@@ -1,28 +1,37 @@
-// LocalStorage'dan kelime haznesini yükle
-let wordBank = JSON.parse(localStorage.getItem('wordBank')) || [];
+const API_URL = 'http://localhost:3000'; // Node.js API URL'si
 
-// DOM elementlerini seç
-const wordInput = document.getElementById('word');
-const translationInput = document.getElementById('translation');
-const addWordButton = document.getElementById('add-word');
+// Kelime Ekleme İşlemi
+document.getElementById('add-word').addEventListener('click', async function () {
+  const word = document.getElementById('word').value.trim(); // İngilizce kelime
+  const translation = document.getElementById('translation').value.trim(); // Türkçe karşılık
+  const date = new Date().toISOString().split('T')[0]; // Bugünün tarihi (YYYY-MM-DD)
 
-// Yeni kelime ekleme
-addWordButton.addEventListener('click', () => {
-  const word = wordInput.value.trim();
-  const translation = translationInput.value.trim();
-  const today = new Date().toISOString().split('T')[0]; // Tarihi al (YYYY-MM-DD formatı)
+  if (!word || !translation) {
+    alert('Lütfen tüm alanları doldurun!');
+    return;
+  }
 
-  if (word && translation) {
-    // Kelimeyi kelime haznesine ekle
-    wordBank.push({ word, translation, date: today });
+  try {
+    // API'ye POST isteği gönder
+    const response = await fetch(`${API_URL}/words`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ word, translation, date }),
+    });
 
-    // LocalStorage'a kaydet
-    localStorage.setItem('wordBank', JSON.stringify(wordBank));
+    const data = await response.json();
 
-    alert(`Kelime eklendi: ${word} - ${translation}`);
-    wordInput.value = '';
-    translationInput.value = '';
-  } else {
-    alert('Lütfen her iki alanı doldurun!');
+    if (response.ok) {
+      alert(data.message); // "Kelime eklendi." mesajını göster
+      document.getElementById('word').value = ''; // Formu temizle
+      document.getElementById('translation').value = ''; // Formu temizle
+    } else {
+      alert('Kelime eklenirken bir sorun oluştu: ' + data.message);
+    }
+  } catch (error) {
+    alert('Sunucuya bağlanılamıyor. Lütfen daha sonra tekrar deneyin.');
+    console.error(error);
   }
 });
