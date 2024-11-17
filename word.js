@@ -1,20 +1,30 @@
-// LocalStorage'dan kelime haznesini yükle
-const wordBank = JSON.parse(localStorage.getItem('wordBank')) || [];
+const API_URL = 'http://localhost:3000'; // Node.js API URL'si
 
 // DOM elementlerini seç
 const wordListElement = document.getElementById('word-list');
 
-// Kelimeleri ekrana yazdırma
-function displayWords() {
-  wordListElement.innerHTML = ''; // Mevcut listeyi temizle
+// API'den tüm kelimeleri al ve ekrana yazdır
+async function loadAllWords() {
+  try {
+    const response = await fetch(`${API_URL}/words`); // Tüm kelimeleri al
+    const wordBank = await response.json();
 
-  wordBank.forEach((entry, index) => {
-    const listItem = document.createElement('li');
+    wordListElement.innerHTML = ''; // Mevcut listeyi temizle
 
-    listItem.textContent = `${entry.word} - ${entry.translation}`;
-    wordListElement.appendChild(listItem);
-  });
+    if (wordBank.length === 0) {
+      wordListElement.innerHTML = '<li>Hiç kelime eklenmedi.</li>';
+    } else {
+      wordBank.forEach(entry => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${entry.word} - ${entry.translation}`;
+        wordListElement.appendChild(listItem);
+      });
+    }
+  } catch (error) {
+    console.error('Kelimeler yüklenirken hata oluştu:', error);
+    wordListElement.innerHTML = '<li>Kelime listesi yüklenemedi. Lütfen daha sonra tekrar deneyin.</li>';
+  }
 }
 
-// Sayfa yüklendiğinde kelimeleri göster
-displayWords();
+// Sayfa yüklendiğinde tüm kelimeleri göster
+loadAllWords();

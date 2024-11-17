@@ -1,5 +1,4 @@
-// LocalStorage'dan kelime haznesini yükle
-const wordBank = JSON.parse(localStorage.getItem('wordBank')) || [];
+const API_URL = 'http://localhost:3000'; // Node.js API URL'si
 
 // DOM elementlerini seç
 const testWordElement = document.getElementById('test-word');
@@ -8,7 +7,25 @@ const checkAnswerButton = document.getElementById('check-answer');
 const feedbackElement = document.getElementById('feedback');
 const newWordButton = document.getElementById('new-word');
 
+let wordBank = [];
 let currentWord = null;
+
+// API'den kelimeleri yükle
+async function loadWordsFromAPI() {
+  try {
+    const response = await fetch(`${API_URL}/words`);
+    wordBank = await response.json();
+
+    if (wordBank.length === 0) {
+      alert('Kelime haznesi boş! Lütfen önce kelime ekleyin.');
+    } else {
+      startTest(); // Kelimeler yüklendiğinde testi başlat
+    }
+  } catch (error) {
+    console.error('Kelimeler yüklenirken hata oluştu:', error);
+    alert('Kelimeler API\'den yüklenemedi. Sunucu çalışıyor mu?');
+  }
+}
 
 // Rastgele bir kelime seçme
 function getRandomWord() {
@@ -25,6 +42,7 @@ function startTest() {
   if (currentWord) {
     testWordElement.textContent = `Kelime: ${currentWord.word}`;
     feedbackElement.textContent = '';
+    feedbackElement.className = ''; // Feedback rengini sıfırla
     answerInput.value = '';
   }
 }
@@ -49,5 +67,5 @@ checkAnswerButton.addEventListener('click', () => {
 // Yeni kelime testi başlat
 newWordButton.addEventListener('click', startTest);
 
-// Sayfa yüklendiğinde testi başlat
-startTest();
+// Sayfa yüklendiğinde API'den kelimeleri yükle ve testi başlat
+loadWordsFromAPI();
