@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000'; // Node.js API URL'si
+const API_URL = 'https://kelime-api.onrender.com'; // Render'daki API URL'n
 
 // DOM elementlerini seç
 const testWordElement = document.getElementById('test-word');
