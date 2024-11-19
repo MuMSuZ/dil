@@ -1,18 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { Pool } = require('pg'); // PostgreSQL bağlantısı için
+const { Pool } = require('pg'); // PostgreSQL için pg modülü
 
 const app = express();
 
-// Render için dinamik port
+// Render için dinamik port, yerelde 3000
 const PORT = process.env.PORT || 3000;
 
 // PostgreSQL bağlantısı
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: 'postgresql://kelime_user:y271BQ2qtzZfWgaKSX3TuNmvZtl1wvfN@dpg-csubk28gph6c7389bj40-a/kelime',
   ssl: {
-    rejectUnauthorized: false, // Render'da SSL'i etkinleştirmek için
+    rejectUnauthorized: false, // Render için SSL doğrulamasını devre dışı bırak
   },
 });
 
@@ -23,7 +23,7 @@ app.use(cors());
 // Tüm Kelimeleri Listele (GET /words)
 app.get('/words', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM words');
+    const result = await pool.query('SELECT * FROM words'); // Veritabanından kelimeleri çek
     res.json(result.rows);
   } catch (error) {
     console.error('Veritabanı hatası:', error);
@@ -41,7 +41,7 @@ app.post('/words', async (req, res) => {
 
   try {
     await pool.query(
-      'INSERT INTO words (word, translation, date) VALUES ($1, $2, $3)',
+      'INSERT INTO words (word, translation, date) VALUES ($1, $2, $3)', // Kelimeyi ekle
       [word, translation, date]
     );
     res.status(201).json({ message: 'Kelime eklendi.' });
@@ -53,9 +53,12 @@ app.post('/words', async (req, res) => {
 
 // Bugünkü Kelimeleri Getir (GET /words/today)
 app.get('/words/today', async (req, res) => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD formatı
   try {
-    const result = await pool.query('SELECT * FROM words WHERE date = $1', [today]);
+    const result = await pool.query(
+      'SELECT * FROM words WHERE date = $1', // Bugünün tarihine göre filtrele
+      [today]
+    );
     res.json(result.rows);
   } catch (error) {
     console.error('Veritabanı hatası:', error);
