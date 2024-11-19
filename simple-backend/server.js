@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const fs = require('fs'); // File System modülü
+const FILE_PATH = 'words.json'; // Kelimelerin kaydedileceği JSON dosyası
 const { Pool } = require('pg'); // PostgreSQL için pg modülü
 
 const app = express();
